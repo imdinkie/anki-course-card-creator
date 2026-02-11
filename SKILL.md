@@ -7,6 +7,8 @@ description: Erstellt und iteriert anspruchsvolle, atomare und quellenbasierte A
 
 Arbeite standardmäßig auf Deutsch. Nutze eine gründliche, vollständige und prüfungsorientierte Abdeckung des geforderten Umfangs.
 
+Wenn zusätzlich ein `pdf`-Skill installiert ist und der Nutzer als Input eine PDF bereitstellt, verwende für Extraktion/Seitenbezug/Rendering zuerst den `pdf`-Skill und arbeite anschließend mit dessen Output in diesem Workflow weiter.
+
 ## Workflow-Entscheidung
 
 1. Wenn der Input ein komplettes Kursmaterial ist, arbeite im **Vollabdeckungsmodus**: decke alle Kapitel/Abschnitte systematisch ab.
@@ -43,13 +45,24 @@ Regel: Überschreibe keine ältere Kartenversion. Jede Iteration erzeugt eine ne
 
 Erstelle `<kurs_slug>_summary.md` als strukturierte Arbeitsbasis.
 
-Pflichtinhalte der Zusammenfassung:
-1. Kapitelweise Gliederung.
-2. Kernbegriffe und Definitionen.
-3. Prozesse/Methoden in klaren Schritten.
-4. Modelle/Frameworks inkl. zentraler Bestandteile.
-5. Prüfungsrelevante Schwerpunkte.
-6. Quellenhinweise mit Seitenzahlen.
+Anforderungen an die Zusammenfassung (detailliert und abdeckend):
+1. Spiegel die Kurs-/Skriptstruktur als klare Kapitel- und Unterkapitelhierarchie.
+2. Decke jeden Abschnitt des geforderten Umfangs ab (bei „gesamter Kurs“: alle Kapitel). Lasse keine Themen stillschweigend aus; wenn etwas irrelevanter wirkt, dann kurz, aber dennoch erfassen.
+3. Schreibe pro Unterkapitel:
+   - Kernaussage(n) in 2–5 Sätzen,
+   - zentrale Begriffe/Definitionen (präzise, prüfungsnah),
+   - Prozesse/Methoden als nummerierte Schritte,
+   - Modelle/Frameworks mit Komponenten und Beziehungen,
+   - typische Fehler/Missverständnisse (falls im Material angedeutet),
+   - mindestens einen Quellenhinweis: `Quelle: S. X` bzw. `Quelle: S. X–Y`.
+4. Für visuelle Inhalte:
+   - erwähne relevante Grafiken/Diagramme/Tabellen mit Kontext und Page-Reference, z. B. `Grafik/Diagramm: <Kurzbezeichnung>, S. Z`,
+   - benenne, wofür die Visualisierung gebraucht wird (welche Aussage/Beziehung sie trägt).
+5. Markiere Prüfungsrelevanz explizit dort, wo das Material darauf hindeutet (Wiederholungen, Hervorhebungen, Definitionen, Klassifikationen, Prozessschritte).
+6. Schließe die Zusammenfassung immer mit einer kurzen Sektion **ohne Musterlösung** ab:
+   - Titel: `## Verständnisfragen (Essay, ohne Lösung)`
+   - 5–12 bewusst komplexe, themenübergreifende Fragen (nicht atomar), die Verständnis, Transfer, Abwägungen und Verknüpfungen zwischen Kapiteln erzwingen.
+   - Keine Antworten, keine Lösungsskizzen, keine Stichpunkte als „Hinweise“.
 
 ### 3) Kartenentwurf v1 erzeugen
 
