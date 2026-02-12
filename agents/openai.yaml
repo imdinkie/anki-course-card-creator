@@ -1,4 +1,4 @@
 interface:
   display_name: "Anki Course Card Creator"
   short_description: "Erstellt gründliche Anki-Karten aus Kursmaterialien"
-  default_prompt: "Nutze $anki-course-card-creator, um aus meinen Vorlesungsunterlagen vollständige, quellenbasierte Anki-Karten mit Versionierung und finalem TSV-Export zu erstellen."
+  default_prompt: "Nutze $anki-course-card-creator, um aus meinen Unterlagen atomare, quellenbasierte Anki-Karten zu erstellen (hierarchisch geordnet mit zweistelliger Nummerierung), visuelle Karten mit Tag Add-Image zu markieren und final als UTF-8 TSV zu exportieren."

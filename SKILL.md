@@ -9,6 +9,50 @@ Arbeite standardmäßig auf Deutsch. Nutze eine gründliche, vollständige und p
 
 Wenn zusätzlich ein `pdf`-Skill installiert ist und der Nutzer als Input eine PDF bereitstellt, verwende für Extraktion/Seitenbezug/Rendering zuerst den `pdf`-Skill und arbeite anschließend mit dessen Output in diesem Workflow weiter.
 
+## Leitlinien (wichtig)
+
+### Atomarität (Default)
+
+Erstelle Karten standardmäßig eher atomar: lieber etwas mehr Karten, die schnell beantwortbar sind, als wenige Karten, bei denen man pro Karte lange nachdenken muss. Kompromittiere dabei keine technische Korrektheit.
+
+Typische Split-Patterns:
+- Lange Listen: zuerst Überblickskarte (falls sinnvoll), dann mehrere Karten mit Teilmengen oder je Item.
+- Vergleiche: pro Vergleichsdimension eine Karte statt alles in eine Karte.
+- Frameworks: pro Komponente/Begriff eigene Karte; Synthese-Karte optional.
+
+### Schema-/Schrittfolgen-Pattern (nur bei ausreichender Komplexität)
+
+Wenn ein Schema/Prozess/Schrittfolge hinreichend komplex ist (mehrere Schritte, Abhängigkeiten, Fehlerpotenzial, prüfungsnah), nutze dieses Pattern:
+1. Überblickskarte (F/A): "Welche Schritte/Phasen gehören zu X?"
+2. Detailkarten: pro Schritt/Phase eine Karte, die Zweck, Inhalt und typische Inputs/Outputs erklärt.
+
+Bei trivialen 2-3-Punkt-Listen ohne Tiefe nicht erzwingen.
+
+### Hierarchische Ordnung (verbindlich)
+
+Strukturiere den Kartenentwurf thematisch über Markdown-Headings:
+- Level 1: `# 01 <Thema>`
+- Level 2: `## 01 <Unterthema>`
+- Level 3: `### 01 <Sub-Unterthema>` (selten, nur wenn wirklich nötig)
+
+Nummerierungsregeln (verbindlich):
+- Immer zweistellig (`01`, `02`, ...).
+- Jede Ebene nummeriert nur innerhalb ihrer Ebene.
+- Die zweite Ebene startet unter jedem neuen `#` wieder bei `01`.
+- Keine hierarchische Nummerierung wie `01.02` verwenden.
+
+### Visuals: Tag-Pflicht `Add-Image`
+
+Wenn eine Karte visuell relevante Evidenz referenziert (z. B. `Grafik/Diagramm: ...`), muss sie in Anki mit Tag `Add-Image` markiert werden.
+
+Praktisch:
+- Im Markdown-Draft kannst du optional direkt nach der Antwort-Fence eine Zeile `Tags: ...` setzen (siehe unten).
+- Beim TSV-Export wird `Add-Image` automatisch hinzugefügt, sobald `Grafik/Diagramm:` im Karteninhalt vorkommt (Enforcement).
+
+### Markdown-Kursmaterial: Bilder mit einlesen
+
+Wenn Kursmaterial auch aus `.md`-Dateien besteht, können dort Bilder verlinkt/eingebettet sein (z. B. `![](img.png)` oder `![[img.png]]`). Diese Bilder müssen mit eingelesen und inhaltlich verstanden werden, bevor du Zusammenfassung/Karten finalisierst.
+
 ## Workflow-Entscheidung
 
 1. Wenn der Input ein komplettes Kursmaterial ist, arbeite im **Vollabdeckungsmodus**: decke alle Kapitel/Abschnitte systematisch ab.
@@ -20,7 +64,7 @@ Wenn zusätzlich ein `pdf`-Skill installiert ist und der Nutzer als Input eine P
 
 ## Dateinamen und Versionierung (verbindlich)
 
-Verwende für jeden Lauf einen Kursslug in Kleinbuchstaben mit Bindestrichen, z. B. `wirtschaftsinformatik-1`.
+Verwende für jeden Lauf einen Kursslug in Kleinbuchstaben mit Bindestrichen, z. B. `kurs-slug`.
 
 1. Zusammenfassung: `<kurs_slug>_summary.md`
 2. Erster Kartenentwurf: `<kurs_slug>_cards_v1.md`
@@ -40,6 +84,7 @@ Regel: Überschreibe keine ältere Kartenversion. Jede Iteration erzeugt eine ne
 1. Erfasse die Inhaltsstruktur (Kapitel, Unterkapitel, zentrale Konzepte, Prozesse, Definitionen, Modelle, Beispiele).
 2. Erfasse zu jedem relevanten Punkt die Quelle mit Seitenzahl.
 3. Markiere visuelle Inhalte (Grafik, Diagramm, Tabelle, Modellbild) mit Seitenzahl.
+4. Wenn `.md`-Dateien Teil des Inputs sind: finde und betrachte alle dort referenzierten Bilder und extrahiere deren Kernaussagen für Summary/Karten.
 
 ### 2) Zusammenfassung erzeugen
 
@@ -114,10 +159,11 @@ Bei Nutzerfeedback:
 
 ## Ausgabeformat für Kartenentwürfe (Markdown)
 
-Nutze folgende Struktur pro Karte im Versionsdokument:
+Nutze folgende Struktur pro Karte im Versionsdokument. Beachte: thematische Ordnung über `#`/`##`/`###` ist verbindlich (siehe Leitlinien).
 
-```markdown
-## <Kapitelnummer> – <Kapiteltitel>
+````markdown
+# 01 <Thema>
+## 01 <Unterthema>
 
 **<Kartentitel>:**
 ```Frage
@@ -129,11 +175,13 @@ Nutze folgende Struktur pro Karte im Versionsdokument:
 Quelle: S. X–Y
 Grafik/Diagramm: <Kurzbezeichnung>, S. Z
 ```
-```
+
+Tags: Add-Image
+````
 
 Für Cloze:
 
-```markdown
+````markdown
 **<Kartentitel>:**
 ```Cloze
 **<Kartentitel>:**
@@ -141,9 +189,22 @@ Für Cloze:
 Quelle: S. X
 Grafik/Diagramm: <Kurzbezeichnung>, S. Z
 ```
-```
+
+Tags: Add-Image
+````
 
 Wenn keine Grafik relevant ist, die Zeile `Grafik/Diagramm: ...` weglassen.
+
+Die `Tags:`-Zeile ist optional. Sie steht außerhalb der Codefences und wird beim TSV-Export in die Tag-Spalte gemappt. `Add-Image` ist Pflicht, sobald `Grafik/Diagramm:` vorkommt (wird beim Export zusätzlich erzwungen).
+
+## Praktische Hilfstools (optional, empfohlen)
+
+Wenn du im aktuellen Arbeitsordner schneller und fehlerärmer arbeiten willst, kannst du folgende Helper nutzen (siehe `scripts/`):
+- `scripts/preflight_check.py`: prüft Kartenstruktur, Quellenpflicht, Heading-Nummerierung, SEITE_FEHLT.
+- `scripts/export_tsv.py`: exportiert final nach TSV (UTF-8, `<br>`, Subdecks aus Headings, erzwingt `Add-Image` bei Grafikverweisen).
+- `scripts/md_collect_images.py`: listet in `.md` referenzierte Bilder auf und prüft, ob sie existieren.
+
+Wenn pip/Installationen systemweit blockiert sind (PEP 668): nutze ein venv im Arbeitsordner, z. B. `python3 -m venv .venv` und dann `. .venv/bin/activate`.
 
 ## Qualitätscheck vor Übergabe
 
@@ -164,4 +225,7 @@ Für das Set:
 
 1. Lade `references/tsv-export.md`, sobald finaler TSV-Export verlangt ist.
 2. Lade `references/ankiconnect-api.md`, sobald direkte Anki-Anlage via API verlangt ist.
-3. Halte den Kernworkflow in dieser Datei, lade Detailregeln nur bei Bedarf nach.
+3. Lade `references/image-occlusion.md`, sobald visuelle Inhalte als Image Occlusion umgesetzt werden sollen.
+4. Lade `references/visuals-and-ocr.md`, sobald Diagramme/Tabellen/Zahlen sauber aus Visuals extrahiert oder konzeptionell verarbeitet werden muessen.
+5. Lade `references/md-images.md`, sobald Kursmaterial `.md`-Dateien mit Bildreferenzen enthaelt.
+6. Halte den Kernworkflow in dieser Datei, lade Detailregeln nur bei Bedarf nach.

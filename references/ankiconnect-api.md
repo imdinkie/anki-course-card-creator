@@ -61,7 +61,7 @@ Wenn `error != null`, gilt der Aufruf als fehlgeschlagen.
     "Front": "Frage...",
     "Back": "Antwort...<br>Quelle: S. 12"
   },
-  "tags": ["course::wirtschaftsinformatik-1"]
+  "tags": ["course::kurs-slug"]
 }
 ```
 
