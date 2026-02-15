@@ -41,6 +41,53 @@ Nummerierungsregeln (verbindlich):
 - Die zweite Ebene startet unter jedem neuen `#` wieder bei `01`.
 - Keine hierarchische Nummerierung wie `01.02` verwenden.
 
+### Kontext in Anki (Breadcrumb) (verbindlich)
+
+Die Zugehörigkeit jeder Karte zum Themenblock wird beim TSV-Export automatisch als Breadcrumb aus der aktuellen `#`/`##`/`###`-Hierarchie in Anki sichtbar gemacht.
+
+### Definitionen vor Details (verbindlich)
+
+Wenn ein Begriff/Artefakt/Prozess neu eingeführt wird:
+1. Erzeuge zuerst eine explizite Definitionskarte (`Was ist X?` / Definition + Scope).
+2. Falls im Material ableitbar: zweite Karte zu Ziel/Aufgaben (`Was sind Ziele/Aufgaben von X?`).
+3. Detailkarten (z. B. Inputs/Outputs, Kennzahlen, Regeln, Gremien, Dokumente) erst danach.
+
+### Vereinfachtes Prozess/Topic-Pattern (overgeneration-sicher)
+
+Default pro neuem Prozess/Topic: maximal 2 Karten (siehe oben: Definition + Aufgaben).
+
+Optional, aber nur wenn explizit im Material und klar prüfbar:
+- Zuordnungskarte: `Wo ist X eingeordnet?` (Framework/Phase/Kategorie), wenn die Einordnung gelehrt wird.
+- Schritte/Artefakte: nur bei nicht-trivialer Liste/Abfolge/Artefakt-Set; dann strikt atomar splitten (keine Monsterkarte).
+
+Guardrails:
+- Generiere keine Inputs/Outputs/Kennzahlen/etc. "auf Verdacht".
+- Wenn Definition + Aufgaben bereits abgedeckt sind: keine zusätzlichen Detailkarten ohne klaren Material-Anker.
+
+### Verbotene Formulierungen (verbindlich)
+
+Nicht verwenden:
+- `klausurrelevant` / `prüfungsrelevant` als Fragestil (z. B. "Warum ist X prüfungsrelevant?")
+- `laut Folie` / `laut Skript`
+
+Stattdessen:
+- objektive Inhaltsfragen (Definition, Abgrenzung, Anwendung, Beispiel, Konsequenz)
+- bei visuellen Zuordnungen/Tabellen/Diagrammen: bevorzugt Image-Occlusion-Template (siehe `references/image-occlusion.md`)
+
+### Akronyme & Artefakt-Mappings (Default: Cloze)
+
+Wenn mehrere Akronyme/Begriffe zusammengehören (z. B. Dokumente, Kennzahlen, Rollen):
+- Nutze eine Cloze-Karte, pro Begriff genau eine Completion (`{{c1::...}}`, `{{c2::...}}`, ...).
+- Schreibe Akronyme aus (EN + DE, falls im Material vorhanden).
+- Ergänze pro Begriff einen sehr kurzen Bedeutungs-/Praxis-Satz (max. 1 Satz), wenn das Konzept sonst zu abstrakt bleibt.
+
+### Abschlussfragen/Lernziele als Coverage-Checklist (ohne Tooling)
+
+Wenn im Material Abschlussfragen/Lernziele/Review Questions existieren:
+- Nutze sie als Abdeckungscheckliste.
+- Stelle sicher, dass jede Frage inhaltlich mindestens einmal abgedeckt ist.
+- Vermeide Redundanz: keine 1:1 Spiegelung erzwingen, sondern gezielt Lücken schließen.
+
 ### Visuals: Tag-Pflicht `Add-Image`
 
 Wenn eine Karte visuell relevante Evidenz referenziert (z. B. `Grafik/Diagramm: ...`), muss sie in Anki mit Tag `Add-Image` markiert werden.
@@ -200,7 +247,7 @@ Die `Tags:`-Zeile ist optional. Sie steht außerhalb der Codefences und wird bei
 ## Praktische Hilfstools (optional, empfohlen)
 
 Wenn du im aktuellen Arbeitsordner schneller und fehlerärmer arbeiten willst, kannst du folgende Helper nutzen (siehe `scripts/`):
-- `scripts/preflight_check.py`: prüft Kartenstruktur, Quellenpflicht, Heading-Nummerierung, SEITE_FEHLT.
+- `scripts/preflight_check.py`: prüft Kartenstruktur, Quellenpflicht, Heading-Nummerierung, SEITE_FEHLT; warnt bei verbotenen Formulierungen.
 - `scripts/export_tsv.py`: exportiert final nach TSV (UTF-8, `<br>`, Subdecks aus Headings, erzwingt `Add-Image` bei Grafikverweisen).
 - `scripts/md_collect_images.py`: listet in `.md` referenzierte Bilder auf und prüft, ob sie existieren.
 

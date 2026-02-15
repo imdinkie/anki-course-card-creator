@@ -64,6 +64,18 @@ def _heading_to_component(line: str) -> str | None:
     return m.group(2).strip()
 
 
+def _context_prefix_html(l1: str | None, l2: str | None, l3: str | None) -> str:
+    parts = [p for p in (l1, l2, l3) if p]
+    if not parts:
+        return ""
+    context_text = " / ".join(parts)
+    context_text = html.escape(context_text, quote=False)
+    return (
+        '<div style="font-size:0.75em;color:#666;line-height:1.2;margin-bottom:6px;">'
+        f"{context_text}</div>"
+    )
+
+
 def parse_notes(md_path: Path, course_name: str, course_slug: str, deck_prefix: str) -> list[Note]:
     lines = md_path.read_text(encoding="utf-8").splitlines()
     notes: list[Note] = []
@@ -147,7 +159,8 @@ def parse_notes(md_path: Path, course_name: str, course_slug: str, deck_prefix: 
             if add_image:
                 tag_set.add("Add-Image")
 
-            field1 = _markdownish_to_html(q_raw)
+            context_html = _context_prefix_html(l1, l2, l3)
+            field1 = context_html + _markdownish_to_html(q_raw)
             field2 = "" if note_type == "Cloze" else _markdownish_to_html(a_raw)
 
             notes.append(Note(field1=field1, field2=field2, deck=deck, notetype=note_type, tags=" ".join(sorted(tag_set))))

@@ -85,6 +85,20 @@ def preflight(md_path: Path) -> tuple[list[str], list[CardIssue]]:
             if "Quelle:" not in content:
                 issues.append(CardIssue(card_title, "Missing 'Quelle:' line."))
 
+            # Style/anti-pattern warnings (do not fail the run).
+            if re.search(r"\bklausurrelevant\b", content, flags=re.IGNORECASE):
+                warnings.append(
+                    f"{md_path.name}:{i+1}: Avoid 'klausurrelevant' in card wording. Rewrite to an objective content question. Title: {card_title!r}"
+                )
+            if re.search(r"warum\s+ist\s+.+?pr(?:ue|ü)fungsrelevant", content, flags=re.IGNORECASE):
+                warnings.append(
+                    f"{md_path.name}:{i+1}: Avoid 'Warum ist ... prüfungsrelevant?'. Prefer a content/definition/application question or Image Occlusion for visuals. Title: {card_title!r}"
+                )
+            if re.search(r"\blaut\s+(folie|skript)\b", content, flags=re.IGNORECASE):
+                warnings.append(
+                    f"{md_path.name}:{i+1}: Avoid 'laut Folie/Skript'. Provide the needed context directly in the question. Title: {card_title!r}"
+                )
+
             if "Grafik/Diagramm:" in content:
                 warnings.append(
                     f"{md_path.name}:{i+1}: Card references Grafik/Diagramm; exporter will enforce tag Add-Image. Title: {card_title!r}"
@@ -117,4 +131,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-
