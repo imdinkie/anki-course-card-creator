@@ -173,6 +173,7 @@ Vollständigkeits-Regeln:
 2. Große Kapitel in mehrere Kartenserien aufteilen.
 3. Wichtige Aufzählungen vollständig erfassen (nicht still kürzen).
 4. Metadaten (ECTS, Orga, Modulnummern) nur aufnehmen, wenn explizit gewünscht.
+5. Keine Karten zu Kurs-/Prüfungskontext oder Zusatzunterlagen (z. B. Ablauf, Hilfsmittel, Bewertungsregeln), außer der Nutzer fordert das explizit.
 
 ### 4) Quellenpflicht pro Karte
 
