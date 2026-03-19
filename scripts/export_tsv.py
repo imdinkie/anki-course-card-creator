@@ -26,7 +26,6 @@ ENHANCED_CLOZE_NOTETYPE = "Enhanced Cloze 2.1 v2"
 IMAGE_LINE_RE = re.compile(r"^Image:\s*(.+?)\s*$")
 MD_IMAGE_RE = re.compile(r"!\[[^\]]*\]\(([^)]+)\)")
 OBSIDIAN_IMAGE_RE = re.compile(r"!\[\[([^\]#|]+)(?:[|#][^\]]+)?\]\]")
-REFERENCE_LINE_RE = re.compile(r"^\s*(Quelle:|Grafik/Diagramm:)\s*.+$")
 
 
 @dataclass(frozen=True)
@@ -81,10 +80,6 @@ def _markdownish_to_html(text: str) -> str:
         return ""
 
     lines = text.replace("\r\n", "\n").replace("\r", "\n").split("\n")
-    reference_lines: list[str] = []
-    while lines and REFERENCE_LINE_RE.match(lines[-1].strip()):
-        reference_lines.insert(0, lines.pop())
-
     parts: list[str] = []
     list_stack: list[tuple[int, str]] = []
     paragraph: list[str] = []
@@ -133,13 +128,6 @@ def _markdownish_to_html(text: str) -> str:
 
     flush_paragraph()
     close_lists(0)
-
-    for ref_line in reference_lines:
-        parts.append(
-            '<div style="font-size:0.75em;color:#666;line-height:1.2;margin-top:6px;">'
-            f"{_inline_markdown_to_html(ref_line)}"
-            "</div>"
-        )
     return "".join(parts).strip()
 
 
@@ -205,7 +193,7 @@ def _resolve_media_paths(md_path: Path, image_refs: list[str]) -> tuple[Path, ..
 
 def _media_target_index(note_type: str) -> int:
     if note_type == "Basic":
-        return 1
+        return 2
     if note_type == ENHANCED_CLOZE_NOTETYPE:
         return 3
     if note_type == "Cloze":
