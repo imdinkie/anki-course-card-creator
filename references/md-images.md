@@ -1,6 +1,6 @@
 # Markdown-Inhalte: Bilder und Embeds
 
-Wenn Kursmaterial auch aus `.md`-Dateien besteht, koennen dort Bilder eingebettet oder verlinkt sein. Diese Visuals gehoeren zum Fachinhalt und muessen in Summary/Karten inhaltlich beruecksichtigt werden.
+Wenn Kursmaterial auch aus `.md`-Dateien besteht, können dort Bilder eingebettet oder verlinkt sein. Diese Visuals gehören zum Fachinhalt und müssen in Summary/Karten inhaltlich berücksichtigt werden.
 
 ## Typische Syntax
 
@@ -11,11 +11,11 @@ Wenn Kursmaterial auch aus `.md`-Dateien besteht, koennen dort Bilder eingebette
 ## Workflow
 
 1. Sammle referenzierte Bilder (z.B. via `scripts/md_collect_images.py`).
-2. Oeffne/render die Bilder und notiere die Kernaussage pro Bild.
+2. Öffne/render die Bilder und notiere die Kernaussage pro Bild.
 3. Erzeuge Karten:
    - konzeptionelle Karte zur Bildaussage
-   - ggf. Image Occlusion Template, wenn Details im Bild geprueft werden sollen
-4. Speichere Arbeitsbilder/Crops zunaechst in `./assets/`.
-5. Referenziere unter jeder visuellen Karte das konkrete benoetigte Bild, z. B. `Image: ./assets/diagramm-01.png`.
+   - ggf. Image Occlusion Template, wenn Details im Bild geprüft werden sollen
+4. Speichere Arbeitsbilder/Crops zunächst in `./assets/`.
+5. Referenziere unter jeder visuellen Karte das konkrete benötigte Bild, z. B. `Image: ./assets/diagramm-01.png`.
 6. Wenn in der Karte `Grafik/Diagramm:` referenziert wird: Tag `Add-Image` setzen.
 7. Beim finalen Export wird daraus ein schlankes `media_bundle/` mit nur den wirklich verwendeten Bildern erzeugt.

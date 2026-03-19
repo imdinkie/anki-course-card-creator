@@ -7,6 +7,8 @@ description: Erstellt und iteriert anspruchsvolle, atomare und quellenbasierte A
 
 Arbeite standardmäßig auf Deutsch. Nutze eine gründliche, vollständige und prüfungsorientierte Abdeckung des geforderten Umfangs.
 
+Schreibe deutsche Inhalte in diesem Skill, in den Referenzdokumenten und in den erzeugten Markdown-Artefakten standardmäßig mit echten Umlauten und `ß` in UTF-8. Verwende also `ä`, `ö`, `ü`, `Ä`, `Ö`, `Ü`, `ß` und nicht systematisch ASCII-Ersatzformen wie `ae`, `oe`, `ue`, `ss`, außer ein technischer Kontext erzwingt explizit ASCII.
+
 Wenn zusätzlich ein `pdf`-Skill installiert ist und der Nutzer als Input eine PDF bereitstellt, verwende für Extraktion/Seitenbezug/Rendering zuerst den `pdf`-Skill und arbeite anschließend mit dessen Output in diesem Workflow weiter.
 
 ## Leitlinien (wichtig)
@@ -357,6 +359,6 @@ Für das Set:
 1. Lade `references/tsv-export.md`, sobald finaler TSV-Export verlangt ist.
 2. Lade `references/ankiconnect-api.md`, sobald direkte Anki-Anlage via API verlangt ist.
 3. Lade `references/image-occlusion.md`, sobald visuelle Inhalte als Image Occlusion umgesetzt werden sollen.
-4. Lade `references/visuals-and-ocr.md`, sobald Diagramme/Tabellen/Zahlen sauber aus Visuals extrahiert oder konzeptionell verarbeitet werden muessen.
-5. Lade `references/md-images.md`, sobald Kursmaterial `.md`-Dateien mit Bildreferenzen enthaelt.
+4. Lade `references/visuals-and-ocr.md`, sobald Diagramme/Tabellen/Zahlen sauber aus Visuals extrahiert oder konzeptionell verarbeitet werden müssen.
+5. Lade `references/md-images.md`, sobald Kursmaterial `.md`-Dateien mit Bildreferenzen enthält.
 6. Halte den Kernworkflow in dieser Datei, lade Detailregeln nur bei Bedarf nach.

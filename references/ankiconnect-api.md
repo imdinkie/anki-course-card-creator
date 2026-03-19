@@ -41,17 +41,17 @@ Wenn `error != null`, gilt der Aufruf als fehlgeschlagen.
 ## Einrichtung / erster Test
 
 1. In Anki das Add-on **AnkiConnect** installieren und Anki neu starten.
-2. Prüfen, dass Anki laeuft und der lokale Endpoint `http://127.0.0.1:8765` erreichbar ist.
-3. Smoke Test im Repo ausfuehren:
+2. Prüfen, dass Anki läuft und der lokale Endpoint `http://127.0.0.1:8765` erreichbar ist.
+3. Smoke Test im Repo ausführen:
 
 ```bash
 python3 scripts/ankiconnect_smoke.py
 ```
 
-Der Smoke Test prueft:
+Der Smoke Test prüft:
 - AnkiConnect-Version
 - ob `Basic`, `Cloze` und `Enhanced Cloze 2.1 v2` existieren
-- ob die benoetigten Felder vorhanden sind
+- ob die benötigten Felder vorhanden sind
 
 ## Relevante Actions
 
@@ -106,8 +106,8 @@ python3 scripts/ankiconnect_import.py \
 
 Das Skript:
 1. parst die Markdown-Karten,
-2. prueft die Notiztypen/Felder,
-3. laedt referenzierte Bilder via `storeMediaFile` hoch,
+2. prüft die Notiztypen/Felder,
+3. lädt referenzierte Bilder via `storeMediaFile` hoch,
 4. bindet Bilder am Anfang des passenden Zielfelds ein,
 5. legt die Notizen via `addNotes` an.
 

@@ -16,7 +16,7 @@ Beispiel:
 IMAGE OCCLUSION: Relevante Grafik/Abbildung aus dem Kursmaterial als Image Occlusion in Anki anlegen.
 ```
 ```Answer
-Hinweis: Diese Karte ist absichtlich ein Template fuer eine Image-Occlusion-Karte.
+Hinweis: Diese Karte ist absichtlich ein Template für eine Image-Occlusion-Karte.
 Quelle: S. X
 Grafik/Diagramm: <Kurzbezeichnung>, S. X
 ```
