@@ -6,6 +6,8 @@ import re
 from dataclasses import dataclass
 from pathlib import Path
 
+ENHANCED_CLOZE_NOTETYPE = "Enhanced Cloze 2.1 v2"
+
 
 @dataclass(frozen=True)
 class CardIssue:
@@ -35,6 +37,72 @@ def _check_heading(line: str) -> str | None:
     return None
 
 
+def _read_optional_fence_block(lines: list[str], start: int) -> tuple[dict[str, list[str]], int]:
+    blocks: dict[str, list[str]] = {}
+    i = start
+    while i < len(lines):
+        if not lines[i].strip():
+            i += 1
+            break
+        if lines[i].startswith("#") or re.match(r"^\*\*.+:\*\*\s*$", lines[i]):
+            break
+        if not lines[i].startswith("```"):
+            i += 1
+            continue
+        fence_type, fence_lines, i = _consume_fence(lines, i)
+        blocks[fence_type] = fence_lines
+    return blocks, i
+
+
+def _significant_words(text: str) -> set[str]:
+    words = re.findall(r"[A-Za-zÄÖÜäöüß]{4,}", text.lower())
+    stop = {
+        "welche",
+        "welcher",
+        "welches",
+        "warum",
+        "wieso",
+        "wodurch",
+        "womit",
+        "worin",
+        "woraus",
+        "nenne",
+        "erkläre",
+        "erklaere",
+        "beschreibe",
+        "karte",
+        "konzept",
+        "grundidee",
+        "definition",
+        "überblick",
+        "ueberblick",
+        "mechanismus",
+        "strategie",
+        "prozess",
+        "modell",
+        "theorie",
+        "frage",
+        "klausur",
+    }
+    return {w for w in words if w not in stop}
+
+
+def _looks_like_answer_leakage(card_title: str, prompt: str) -> bool:
+    title_words = _significant_words(card_title)
+    prompt_words = _significant_words(prompt)
+    if not title_words or not prompt_words:
+        return False
+    overlap = title_words & prompt_words
+    return len(overlap) >= min(2, len(title_words))
+
+
+def _warn_if_long_comma_chain(content: str) -> bool:
+    for line in content.splitlines():
+        if line.count(",") >= 4 and not re.match(r"^\s*Quelle:", line):
+            return True
+    return False
+
+
 def preflight(md_path: Path) -> tuple[list[str], list[CardIssue]]:
     lines = md_path.read_text(encoding="utf-8").splitlines()
     warnings: list[str] = []
@@ -62,28 +130,49 @@ def preflight(md_path: Path) -> tuple[list[str], list[CardIssue]]:
                 continue
 
             fence_type, q_lines, j = _consume_fence(lines, i + 1)
-            if fence_type not in ("Frage", "Cloze"):
+            if fence_type not in ("Frage", "Question", "Cloze", "EnhancedCloze"):
                 issues.append(CardIssue(card_title, f"Unexpected fence type {fence_type!r} after title."))
                 i = j
                 continue
 
-            a_lines: list[str] = []
+            answer_lines: list[str] = []
+            notes_lines: list[str] = []
+            note_lines: list[str] = []
+            mnemonic_lines: list[str] = []
+            extra_lines: list[str] = []
             k = j
-            if fence_type == "Frage":
+            if fence_type in ("Frage", "Question"):
                 if j >= len(lines) or not lines[j].startswith("```"):
-                    issues.append(CardIssue(card_title, "Missing Antwort fence after Frage."))
+                    issues.append(CardIssue(card_title, "Missing Antwort/Answer fence after Frage/Question."))
                     i = j
                     continue
-                a_type, a_lines, k = _consume_fence(lines, j)
-                if a_type != "Antwort":
-                    issues.append(CardIssue(card_title, f"Expected Antwort fence, got {a_type!r}."))
+                a_type, answer_lines, k = _consume_fence(lines, j)
+                if a_type not in ("Antwort", "Answer"):
+                    issues.append(CardIssue(card_title, f"Expected Antwort/Answer fence, got {a_type!r}."))
+                blocks, k = _read_optional_fence_block(lines, k)
+                notes_lines = blocks.get("Notes", [])
+            elif fence_type == "EnhancedCloze":
+                blocks, k = _read_optional_fence_block(lines, j)
+                note_lines = blocks.get("Note", [])
+                mnemonic_lines = blocks.get("Mnemonic", [])
+                extra_lines = blocks.get("Extra", [])
 
-            content = "\n".join(q_lines + a_lines)
+            content = "\n".join(q_lines + answer_lines + notes_lines + note_lines + mnemonic_lines + extra_lines)
             if "SEITE_FEHLT" in content:
                 issues.append(CardIssue(card_title, "Contains SEITE_FEHLT (must be resolved before export)."))
 
             if "Quelle:" not in content:
                 issues.append(CardIssue(card_title, "Missing 'Quelle:' line."))
+
+            if fence_type == "EnhancedCloze" and "{{c" not in "\n".join(q_lines):
+                warnings.append(
+                    f"{md_path.name}:{i+1}: EnhancedCloze card without cloze markup detected. This is allowed, but verify that Basic would not be clearer. Title: {card_title!r}"
+                )
+
+            if fence_type == "Cloze":
+                warnings.append(
+                    f"{md_path.name}:{i+1}: Legacy `Cloze` detected. Prefer `{ENHANCED_CLOZE_NOTETYPE}` for lists, mappings, or staged reveal. Title: {card_title!r}"
+                )
 
             # Style/anti-pattern warnings (do not fail the run).
             if re.search(r"\bklausurrelevant\b", content, flags=re.IGNORECASE):
@@ -99,10 +188,35 @@ def preflight(md_path: Path) -> tuple[list[str], list[CardIssue]]:
                     f"{md_path.name}:{i+1}: Avoid 'laut Folie/Skript'. Provide the needed context directly in the question. Title: {card_title!r}"
                 )
 
+            if re.search(r"warum\s+ist\s+.+?relevant", content, flags=re.IGNORECASE):
+                warnings.append(
+                    f"{md_path.name}:{i+1}: Avoid relevance-framed cards when a concept/application card or Image Occlusion would test the material better. Title: {card_title!r}"
+                )
+
             if "Grafik/Diagramm:" in content:
                 warnings.append(
                     f"{md_path.name}:{i+1}: Card references Grafik/Diagramm; exporter will enforce tag Add-Image. Title: {card_title!r}"
                 )
+
+            question_prompt = "\n".join(q_lines)
+            if _looks_like_answer_leakage(card_title, question_prompt):
+                warnings.append(
+                    f"{md_path.name}:{i+1}: Possible answer leakage from card title/question wording. Rewrite more indirectly if feasible. Title: {card_title!r}"
+                )
+
+            if _warn_if_long_comma_chain(content):
+                warnings.append(
+                    f"{md_path.name}:{i+1}: Long comma-separated enumeration detected. Prefer bullet points or numbered lists for readability and HTML export. Title: {card_title!r}"
+                )
+
+            if fence_type == "EnhancedCloze":
+                cloze_numbers = re.findall(r"\{\{c(\d+)::", "\n".join(q_lines))
+                if cloze_numbers:
+                    max_group = max(cloze_numbers.count(num) for num in set(cloze_numbers))
+                    if max_group >= 4:
+                        warnings.append(
+                            f"{md_path.name}:{i+1}: Many elements share the same cloze number. Verify that the chunk is still genuinely one easy unit. Title: {card_title!r}"
+                        )
 
             i = k
             continue

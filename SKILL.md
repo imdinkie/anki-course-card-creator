@@ -20,6 +20,37 @@ Typische Split-Patterns:
 - Vergleiche: pro Vergleichsdimension eine Karte statt alles in eine Karte.
 - Frameworks: pro Komponente/Begriff eigene Karte; Synthese-Karte optional.
 
+Zusätzliche Guardrails:
+- Wenn Frage oder Kartentitel die gesuchte Lösung schon direkt verraten, formuliere um.
+- Lieber zwei gute Karten als eine Karte mit zwei halb-unabhängigen Gedankenschritten.
+- Gruppiere mehrere Punkte nur dann auf derselben Karte bzw. unter derselben Cloze-Nummer, wenn sie wirklich als eine kleine, leicht merkbare Einheit gelernt werden können.
+- Wenn eine Karte ohne Zusatzkontext zu nackt/kurz wäre, ergänze Kontext, Beispiel, Merkhilfe oder Einordnung in einem Zusatzfeld statt die Kernfrage künstlich aufzublähen.
+
+### Notiztyp-Policy (verbindlich)
+
+Default:
+- Standardkartentyp ist `Basic`.
+- Standard-Cloze-Typ ist **nicht** mehr das Anki-Standard-Notizformat `Cloze`, sondern `Enhanced Cloze 2.1 v2`.
+
+Verwendung:
+- `Basic` für Definitionen, Abgrenzungen, Zusammenhänge, Anwendungen, Vergleiche, Begründungen, Beispiele und andere konzeptuelle Fragen.
+- `Enhanced Cloze 2.1 v2` bevorzugt für Listen, Zuordnungen, Sequenzen, Matrizen, Akronym-/Artefakt-Bündel und strukturierte Mehrfach-Reproduktion.
+- Das alte Standard-`Cloze` nur aus Kompatibilitätsgründen in Bestandsdateien akzeptieren, aber nicht mehr als Default erzeugen.
+
+Feldnutzung:
+- Bei `Basic` gibt es die Felder `Front`, `Back`, `Notes`. Nutze `Notes` großzügig für Kontext, Beispiele, Mnemonics, Eselsbrücken, typische Fehler oder kurze Einordnungen.
+- Bei `Enhanced Cloze 2.1 v2` gibt es die Felder `Content`, `Note`, `Mnemonic`, `Extra`, `Cloze99`. Nutze `Note`, `Mnemonic` und `Extra` großzügig, aber nur wenn sie didaktisch helfen. `Cloze99` bleibt standardmäßig leer.
+
+### Fragequalität / Prompt-Leakage (verbindlich)
+
+Vermeide Formulierungen, bei denen Titel oder Frage die Antwort schon mitliefern.
+
+Praktisch:
+- Kartentitel eher neutral als etikettierend formulieren.
+- In der Frage nicht unnötig den Zielbegriff nennen, wenn eine indirektere Formulierung die gleiche Präzision hat.
+- Keine Fragen bauen, die sich durch das Lesen des Titels praktisch schon selbst beantworten.
+- Vor jeder finalen Karte kurz prüfen: "Würde ich die Antwort auch dann noch aktiv erinnern müssen, wenn ich nur Titel + Frage sehe?"
+
 ### Schema-/Schrittfolgen-Pattern (nur bei ausreichender Komplexität)
 
 Wenn ein Schema/Prozess/Schrittfolge hinreichend komplex ist (mehrere Schritte, Abhängigkeiten, Fehlerpotenzial, prüfungsnah), nutze dieses Pattern:
@@ -74,12 +105,14 @@ Stattdessen:
 - objektive Inhaltsfragen (Definition, Abgrenzung, Anwendung, Beispiel, Konsequenz)
 - bei visuellen Zuordnungen/Tabellen/Diagrammen: bevorzugt Image-Occlusion-Template (siehe `references/image-occlusion.md`)
 
-### Akronyme & Artefakt-Mappings (Default: Cloze)
+### Akronyme & Artefakt-Mappings (Default: Enhanced Cloze)
 
 Wenn mehrere Akronyme/Begriffe zusammengehören (z. B. Dokumente, Kennzahlen, Rollen):
-- Nutze eine Cloze-Karte, pro Begriff genau eine Completion (`{{c1::...}}`, `{{c2::...}}`, ...).
+- Nutze standardmäßig eine `Enhanced Cloze 2.1 v2`-Karte.
+- Pro Begriff möglichst genau eine Completion.
 - Schreibe Akronyme aus (EN + DE, falls im Material vorhanden).
-- Ergänze pro Begriff einen sehr kurzen Bedeutungs-/Praxis-Satz (max. 1 Satz), wenn das Konzept sonst zu abstrakt bleibt.
+- Packe ausgeschriebene Bedeutung und ggf. sehr kurzes Praxisbeispiel möglichst mit in die Completion, wenn das die Lernbarkeit klar verbessert.
+- Wenn ein Akronym-Bündel inhaltlich zu komplex wird, splitte in zwei Karten statt alles auf eine Karte zu pressen.
 
 ### Abschlussfragen/Lernziele als Coverage-Checklist (ohne Tooling)
 
@@ -162,11 +195,15 @@ Erstelle `<kurs_slug>_cards_v1.md` auf Basis der Zusammenfassung und des Quellma
 
 Didaktik-Regeln:
 1. Standardkartentyp: **Basic (Frage/Antwort)**.
-2. **Cloze** nur, wenn für Schrittfolgen, Listen oder präzise Definitionen didaktisch klar besser.
+2. **Enhanced Cloze 2.1 v2** verwenden, wenn für Listen, Schrittfolgen, Zuordnungen oder strukturierte Wiedererkennung didaktisch klar besser.
 3. Karten sind atomar, aber anspruchsvoll.
 4. Keine trivialen Ein-Wort-Lücken ohne konzeptuelle Leistung.
 5. Vermeide Prompt-Leakage: keine direkten Antwortbegriffe unnötig in der Frage.
 6. Formulierungen der Fragen möglichst standardisiert und nüchtern halten.
+7. Definiere wichtige Begriffe zuerst auf High-Level, bevor du in Unterarten, Inputs/Outputs oder Spezialfälle gehst.
+8. Gib bei schwierigen/abstrakten Karten lieber ein knappes Beispiel oder Zusatzkontext in `Notes` / `Note` / `Mnemonic` / `Extra`, statt die Kernfrage zu verwässern.
+9. Antworten mit Aufzählungen als echte Listen formatieren, nicht als lange Komma-Ketten.
+10. Hebe Schlüsselbegriffe in Antworten gezielt mit `*...*` oder `**...**` hervor.
 
 Vollständigkeits-Regeln:
 1. Bei „gesamter Kurs“: alle Kapitel abdecken.
@@ -214,42 +251,71 @@ Nutze folgende Struktur pro Karte im Versionsdokument. Beachte: thematische Ordn
 ## 01 <Unterthema>
 
 **<Kartentitel>:**
-```Frage
+```Question
 **<Kartentitel>:**
 <präzise Frage>
 ```
-```Antwort
+```Answer
 <prägnante, vollständige Antwort>
 Quelle: S. X–Y
 Grafik/Diagramm: <Kurzbezeichnung>, S. Z
+```
+```Notes
+<optionaler Zusatzkontext, Beispiel, Merkhilfe, Einordnung>
 ```
 
 Tags: Add-Image
 ````
 
-Für Cloze:
+Hinweise:
+- `Notes` ist optional, sollte aber großzügig genutzt werden, wenn zusätzlicher Kontext das Erinnern stabilisiert.
+- Wenn keine Grafik relevant ist, die Zeile `Grafik/Diagramm: ...` weglassen.
+
+Für `Enhanced Cloze 2.1 v2`:
 
 ````markdown
 **<Kartentitel>:**
-```Cloze
+```EnhancedCloze
 **<Kartentitel>:**
 <Text mit {{c1::konzeptueller Lücke}}>
 Quelle: S. X
 Grafik/Diagramm: <Kurzbezeichnung>, S. Z
 ```
+```Note
+<optionale kurze Einordnung oder Zusatzkontext>
+```
+```Mnemonic
+<optionale Eselsbrücke / Merkhilfe>
+```
+```Extra
+<optionale Zusatzinformation, Mini-Beispiel, Abgrenzung>
+```
 
 Tags: Add-Image
 ````
 
-Wenn keine Grafik relevant ist, die Zeile `Grafik/Diagramm: ...` weglassen.
+Für Legacy-Bestände weiterhin erlaubt:
 
-Die `Tags:`-Zeile ist optional. Sie steht außerhalb der Codefences und wird beim TSV-Export in die Tag-Spalte gemappt. `Add-Image` ist Pflicht, sobald `Grafik/Diagramm:` vorkommt (wird beim Export zusätzlich erzwungen).
+````markdown
+**<Kartentitel>:**
+```Cloze
+**<Kartentitel>:**
+<Legacy-Cloze-Text mit {{c1::...}}>
+Quelle: S. X
+```
+````
+
+Regeln:
+- `Note`, `Mnemonic` und `Extra` sind optional, aber ausdrücklich erwünscht, wenn sie das Lernen verbessern.
+- Nicht alle Zusatzfelder künstlich befüllen. Nutze sie nur mit echtem didaktischem Mehrwert.
+- Die `Tags:`-Zeile ist optional. Sie steht außerhalb der Codefences und wird beim TSV-Export in die Tag-Spalte gemappt.
+- `Add-Image` ist Pflicht, sobald `Grafik/Diagramm:` vorkommt (wird beim Export zusätzlich erzwungen).
 
 ## Praktische Hilfstools (optional, empfohlen)
 
 Wenn du im aktuellen Arbeitsordner schneller und fehlerärmer arbeiten willst, kannst du folgende Helper nutzen (siehe `scripts/`):
-- `scripts/preflight_check.py`: prüft Kartenstruktur, Quellenpflicht, Heading-Nummerierung, SEITE_FEHLT; warnt bei verbotenen Formulierungen.
-- `scripts/export_tsv.py`: exportiert final nach TSV (UTF-8, `<br>`, Subdecks aus Headings, erzwingt `Add-Image` bei Grafikverweisen).
+- `scripts/preflight_check.py`: prüft Kartenstruktur, Quellenpflicht, Heading-Nummerierung, `SEITE_FEHLT`; warnt u. a. bei verbotenen Formulierungen, Legacy-`Cloze`, möglicher Antwort-Leakage und schlecht formatierten Komma-Listen.
+- `scripts/export_tsv.py`: exportiert final nach TSV für `Basic`, `Enhanced Cloze 2.1 v2` und Legacy-`Cloze`; wandelt Listen/Zeilenumbrüche in HTML um, leitet Subdecks aus Headings ab und erzwingt `Add-Image` bei Grafikverweisen.
 - `scripts/md_collect_images.py`: listet in `.md` referenzierte Bilder auf und prüft, ob sie existieren.
 
 Wenn pip/Installationen systemweit blockiert sind (PEP 668): nutze ein venv im Arbeitsordner, z. B. `python3 -m venv .venv` und dann `. .venv/bin/activate`.
