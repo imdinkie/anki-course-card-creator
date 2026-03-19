@@ -15,4 +15,7 @@ Wenn Kursmaterial auch aus `.md`-Dateien besteht, koennen dort Bilder eingebette
 3. Erzeuge Karten:
    - konzeptionelle Karte zur Bildaussage
    - ggf. Image Occlusion Template, wenn Details im Bild geprueft werden sollen
-4. Wenn in der Karte `Grafik/Diagramm:` referenziert wird: Tag `Add-Image` setzen.
+4. Speichere Arbeitsbilder/Crops zunaechst in `./assets/`.
+5. Referenziere unter jeder visuellen Karte das konkrete benoetigte Bild, z. B. `Image: ./assets/diagramm-01.png`.
+6. Wenn in der Karte `Grafik/Diagramm:` referenziert wird: Tag `Add-Image` setzen.
+7. Beim finalen Export wird daraus ein schlankes `media_bundle/` mit nur den wirklich verwendeten Bildern erzeugt.

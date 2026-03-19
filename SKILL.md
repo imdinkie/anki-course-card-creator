@@ -128,6 +128,8 @@ Wenn eine Karte visuell relevante Evidenz referenziert (z. B. `Grafik/Diagramm: 
 Praktisch:
 - Im Markdown-Draft kannst du optional direkt nach der Antwort-Fence eine Zeile `Tags: ...` setzen (siehe unten).
 - Beim TSV-Export wird `Add-Image` automatisch hinzugefügt, sobald `Grafik/Diagramm:` im Karteninhalt vorkommt (Enforcement).
+- Bei visuellen Karten soll außerdem unter der Karte ein expliziter Bildblock stehen, z. B. `Image: ./assets/<datei>.png` oder `![](./assets/<datei>.png)`.
+- Das finale Export-Bundle soll nur die tatsächlich referenzierten Bilder enthalten; Arbeits-Screenshots in `assets/` dürfen darüber hinausgehen.
 
 ### Markdown-Kursmaterial: Bilder mit einlesen
 
@@ -165,6 +167,7 @@ Regel: Überschreibe keine ältere Kartenversion. Jede Iteration erzeugt eine ne
 2. Erfasse zu jedem relevanten Punkt die Quelle mit Seitenzahl.
 3. Markiere visuelle Inhalte (Grafik, Diagramm, Tabelle, Modellbild) mit Seitenzahl.
 4. Wenn `.md`-Dateien Teil des Inputs sind: finde und betrachte alle dort referenzierten Bilder und extrahiere deren Kernaussagen für Summary/Karten.
+5. Wenn du für PDF-/Skriptmaterial Bilder oder Diagramme renderst/croppst, speichere sie zunächst in `./assets/`. Referenziere später in Karten aber nur die wirklich benötigten Bilder.
 
 ### 2) Zusammenfassung erzeugen
 
@@ -263,6 +266,7 @@ Grafik/Diagramm: <Kurzbezeichnung>, S. Z
 ```Notes
 <optionaler Zusatzkontext, Beispiel, Merkhilfe, Einordnung>
 ```
+Image: ./assets/<datei>.png
 
 Tags: Add-Image
 ````
@@ -290,6 +294,7 @@ Grafik/Diagramm: <Kurzbezeichnung>, S. Z
 ```Extra
 <optionale Zusatzinformation, Mini-Beispiel, Abgrenzung>
 ```
+Image: ./assets/<datei>.png
 
 Tags: Add-Image
 ````
@@ -303,20 +308,32 @@ Für Legacy-Bestände weiterhin erlaubt:
 <Legacy-Cloze-Text mit {{c1::...}}>
 Quelle: S. X
 ```
+```BackExtra
+<optionaler Zusatzkontext; Bilder werden bei Legacy-Cloze hier vorne eingebunden>
+```
+Image: ./assets/<datei>.png
 ````
 
 Regeln:
 - `Note`, `Mnemonic` und `Extra` sind optional, aber ausdrücklich erwünscht, wenn sie das Lernen verbessern.
 - Nicht alle Zusatzfelder künstlich befüllen. Nutze sie nur mit echtem didaktischem Mehrwert.
+- `BackExtra` ist bei Legacy-`Cloze` optional, aber das vorgesehene Feld für Zusatzkontext und Bilder.
+- Bilder werden im finalen Export immer **am Anfang** des jeweiligen Zielfelds eingebunden:
+  - `Basic` -> `Notes`
+  - `Enhanced Cloze 2.1 v2` -> `Extra`
+  - `Legacy-Cloze` -> `Back Extra`
 - Die `Tags:`-Zeile ist optional. Sie steht außerhalb der Codefences und wird beim TSV-Export in die Tag-Spalte gemappt.
 - `Add-Image` ist Pflicht, sobald `Grafik/Diagramm:` vorkommt (wird beim Export zusätzlich erzwungen).
 
 ## Praktische Hilfstools (optional, empfohlen)
 
 Wenn du im aktuellen Arbeitsordner schneller und fehlerärmer arbeiten willst, kannst du folgende Helper nutzen (siehe `scripts/`):
-- `scripts/preflight_check.py`: prüft Kartenstruktur, Quellenpflicht, Heading-Nummerierung, `SEITE_FEHLT`; warnt u. a. bei verbotenen Formulierungen, Legacy-`Cloze`, möglicher Antwort-Leakage und schlecht formatierten Komma-Listen.
-- `scripts/export_tsv.py`: exportiert final nach TSV für `Basic`, `Enhanced Cloze 2.1 v2` und Legacy-`Cloze`; wandelt Listen/Zeilenumbrüche in HTML um, leitet Subdecks aus Headings ab und erzwingt `Add-Image` bei Grafikverweisen.
+- `scripts/preflight_check.py`: prüft Kartenstruktur, Quellenpflicht, Heading-Nummerierung, `SEITE_FEHLT`; warnt u. a. bei verbotenen Formulierungen, Legacy-`Cloze`, möglicher Antwort-Leakage, schlecht formatierten Komma-Listen und fehlenden Bildblöcken bei visuellen Karten.
+- `scripts/export_tsv.py`: exportiert final nach TSV für `Basic`, `Enhanced Cloze 2.1 v2` und Legacy-`Cloze`; wandelt Listen/Zeilenumbrüche in HTML um, leitet Subdecks aus Headings ab, baut automatisch ein `media_bundle/` mit allen referenzierten Bildern und bindet Bilder am Anfang des jeweiligen Zielfelds ein.
 - `scripts/md_collect_images.py`: listet in `.md` referenzierte Bilder auf und prüft, ob sie existieren.
+- `scripts/copy_media_bundle.py`: kopiert das finale `media_bundle/` in ein Anki-`collection.media`-Verzeichnis.
+- `scripts/ankiconnect_smoke.py`: prüft, ob AnkiConnect läuft und ob die benötigten Notiztypen/Felder existieren.
+- `scripts/ankiconnect_import.py`: lädt referenzierte Medien via AnkiConnect hoch und legt die Notizen direkt in Anki an.
 
 Wenn pip/Installationen systemweit blockiert sind (PEP 668): nutze ein venv im Arbeitsordner, z. B. `python3 -m venv .venv` und dann `. .venv/bin/activate`.
 

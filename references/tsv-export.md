@@ -55,7 +55,8 @@ Keine zusätzliche Datenkopfzeile ausgeben.
 ### Legacy-Cloze
 
 1. `Field1`: kompletter Cloze-Text inkl. `{{c1::...}}`
-2. `Field2` bis `Field5`: leer
+2. `Field2`: `Back Extra`
+3. `Field3` bis `Field5`: leer
 3. `NoteType`: `Cloze`
 
 ## Wichtiger Import-Hinweis
@@ -70,6 +71,8 @@ Anki richtet sich beim CSV/TSV-Import mit `#notetype column` faktisch nach der m
 1. Behalte `Quelle: S. ...` im Antworts-/Cloze-Inhalt.
 2. Bei visueller Relevanz beibehalten: `Grafik/Diagramm: <...>, S. ...`.
 3. Wenn `SEITE_FEHLT` vorhanden ist, nicht exportieren, bis das geklärt ist.
+4. Bilder werden nicht als Binärdaten in die TSV geschrieben, sondern als HTML-Referenzen wie `<img src="...">`.
+5. Der Exporter erzeugt dafür automatisch ein flaches `media_bundle/`, das nur die tatsächlich referenzierten Bilder enthält.
 
 ## Deck- und Tag-Regeln
 
@@ -82,6 +85,27 @@ Anki richtet sich beim CSV/TSV-Import mit `#notetype column` faktisch nach der m
 4. Jede Ebene zählt nur innerhalb ihrer Ebene; zweite Ebene startet unter jedem neuen `#` wieder bei `01`.
 5. Tags: mindestens `course::<kurs_slug>`. Weitere Tags optional.
 6. Sobald eine Karte `Grafik/Diagramm: ...` referenziert oder ein `IMAGE OCCLUSION:`-Template ist, muss `Add-Image` gesetzt sein; der Exporter erzwingt das.
+
+## Bild-Workflow
+
+1. In Markdown-Entwürfen unter der Karte ein Bild referenzieren, z. B.:
+   - `Image: ./assets/diagramm-01.png`
+   - `![](./assets/diagramm-01.png)`
+2. Beim finalen Export:
+   - werden nur die tatsächlich referenzierten Bilder in `media_bundle/` kopiert
+   - werden `<img src="...">`-Tags in die TSV-Felder geschrieben
+   - stehen Bilder immer **am Anfang** des jeweiligen Zielfelds
+3. Zielfelder:
+   - `Basic` -> `Notes`
+   - `Enhanced Cloze 2.1 v2` -> `Extra`
+   - `Legacy-Cloze` -> `Back Extra`
+
+## Import in Anki ohne API
+
+1. Export ausführen und `*_cards_final.tsv` plus `media_bundle/` erzeugen.
+2. Die Dateien aus `media_bundle/` in das gewünschte `collection.media` kopieren.
+3. Die TSV in Anki importieren und `Allow HTML in fields` aktivieren.
+4. Alternativ den Helper `scripts/copy_media_bundle.py` verwenden.
 
 ## Formatierungsregeln
 

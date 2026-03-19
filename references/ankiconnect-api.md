@@ -33,9 +33,25 @@ Wenn `error != null`, gilt der Aufruf als fehlgeschlagen.
 2. Decks lesen mit `deckNames`.
 3. Falls Zieldeck fehlt: `createDeck`.
 4. Notiztypen prüfen: `modelNames` und ggf. `modelFieldNames`.
-5. Vor Massenschreiben validieren: `canAddNotes`.
-6. Schreiben mit `addNotes`.
-7. Optional prüfen mit `findNotes` + `notesInfo`.
+5. Medien hochladen mit `storeMediaFile`.
+6. Vor Massenschreiben validieren: `canAddNotes`.
+7. Schreiben mit `addNotes`.
+8. Optional prüfen mit `findNotes` + `notesInfo`.
+
+## Einrichtung / erster Test
+
+1. In Anki das Add-on **AnkiConnect** installieren und Anki neu starten.
+2. Prüfen, dass Anki laeuft und der lokale Endpoint `http://127.0.0.1:8765` erreichbar ist.
+3. Smoke Test im Repo ausfuehren:
+
+```bash
+python3 scripts/ankiconnect_smoke.py
+```
+
+Der Smoke Test prueft:
+- AnkiConnect-Version
+- ob `Basic`, `Cloze` und `Enhanced Cloze 2.1 v2` existieren
+- ob die benoetigten Felder vorhanden sind
 
 ## Relevante Actions
 
@@ -70,6 +86,30 @@ Wenn `error != null`, gilt der Aufruf als fehlgeschlagen.
 1. Connection-Fehler (z. B. Add-on nicht aktiv, Port nicht erreichbar): nicht weiter versuchen, TSV-Fallback anbieten.
 2. API-Fehler je Request (`error` gesetzt): Ursache melden, TSV-Fallback anbieten.
 3. Teilfehler bei `addNotes` (einzelne `null` IDs): fehlerhafte Einträge separat melden und als TSV sichern.
+
+## Skripte im Repo
+
+### Smoke Test
+
+```bash
+python3 scripts/ankiconnect_smoke.py
+```
+
+### Direktimport aus Markdown
+
+```bash
+python3 scripts/ankiconnect_import.py \
+  --in kurs_cards_v3.md \
+  --course "Mein Kurs" \
+  --slug mein-kurs
+```
+
+Das Skript:
+1. parst die Markdown-Karten,
+2. prueft die Notiztypen/Felder,
+3. laedt referenzierte Bilder via `storeMediaFile` hoch,
+4. bindet Bilder am Anfang des passenden Zielfelds ein,
+5. legt die Notizen via `addNotes` an.
 
 ## Hinweise zur Robustheit
 
