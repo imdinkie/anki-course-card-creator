@@ -4,7 +4,24 @@ Dieses Skill ist auf einen Workflow mit zwei bevorzugten Anki-Notiztypen ausgele
 - `Basic`
 - `Enhanced Cloze 2.1 v2`
 
+Zusätzlich benötigt der Export-/Importpfad für saubere Markdown-zu-HTML-Konvertierung das Python-Paket `markdown`.
+
 ## Voraussetzungen für optimale Nutzung
+
+### 0. Python-Markdown verfügbar machen
+
+Der TSV-Export und der direkte AnkiConnect-Import verwenden denselben Markdown-Renderer. Dadurch werden z. B. `**fett**`, `*kursiv*`, Bullet-Lists und nummerierte Listen sauber in schlichtes HTML übertragen.
+
+Im aktuellen Profil ist das Paket auf dieser Maschine bereits verfügbar. Falls es in einer anderen Umgebung fehlt:
+
+```bash
+python3 -m venv .venv
+. .venv/bin/activate
+pip install -r requirements.txt
+```
+
+Hinweis:
+- Wenn dem Modell bei der Arbeit Python-Pakete fehlen, soll es standardmäßig selbst ein lokales `.venv` im Arbeitsordner erstellen und die fehlenden Pakete dort installieren.
 
 ### 1. Enhanced Cloze installieren
 
@@ -113,6 +130,10 @@ Der lokale Exporter unterstützt:
 - `Basic`
 - `Enhanced Cloze 2.1 v2`
 - Legacy-`Cloze` für ältere Bestände
+
+Zusätzlich gilt:
+- Markdown in Kartenfeldern wird vor Export bzw. Direktimport in schlichtes HTML umgewandelt.
+- `Quelle:` und `Grafik/Diagramm:` werden automatisch als dezente Meta-Zeilen gerendert.
 
 Markdown-Entwürfe können daher gemischt sein. Beim Export werden Decks, Notiztyp und Tags automatisch gesetzt.
 

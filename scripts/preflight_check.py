@@ -101,6 +101,18 @@ def _looks_like_answer_leakage(card_title: str, prompt: str) -> bool:
     return len(overlap) >= min(2, len(title_words))
 
 
+def _has_explicit_question_prompt(lines: list[str]) -> bool:
+    for line in lines:
+        stripped = line.strip()
+        if not stripped:
+            continue
+        if re.match(r"^\*\*.+\*\*$", stripped):
+            continue
+        if stripped.endswith("?"):
+            return True
+    return False
+
+
 def _warn_if_long_comma_chain(content: str) -> bool:
     for line in content.splitlines():
         if line.count(",") >= 4 and not re.match(r"^\s*Quelle:", line):
@@ -213,6 +225,10 @@ def preflight(md_path: Path) -> tuple[list[str], list[CardIssue]]:
             warnings.append(
                 f"{md_path.name}:{i+1}: EnhancedCloze card without cloze markup detected. This is allowed, but verify that Basic would not be clearer. Title: {card_title!r}"
             )
+        if fence_type == "EnhancedCloze" and not _has_explicit_question_prompt(q_lines):
+            warnings.append(
+                f"{md_path.name}:{i+1}: EnhancedCloze card without explicit guiding question detected. Keep a real question above the clozes. Title: {card_title!r}"
+            )
 
         if fence_type == "Cloze":
             warnings.append(
@@ -246,6 +262,15 @@ def preflight(md_path: Path) -> tuple[list[str], list[CardIssue]]:
         if _looks_like_answer_leakage(card_title, question_prompt):
             warnings.append(
                 f"{md_path.name}:{i+1}: Possible answer leakage from card title/question wording. Rewrite more indirectly if feasible. Title: {card_title!r}"
+            )
+        meta_fields = "\n".join(notes_lines + note_lines + mnemonic_lines + extra_lines + legacy_back_extra_lines)
+        if re.search(
+            r"\b(diese karte prüft|diese karte prueft|klausurnah|bewusst isoliert|die clozes sind absichtlich|die karte deckt bewusst)\b",
+            meta_fields,
+            flags=re.IGNORECASE,
+        ):
+            warnings.append(
+                f"{md_path.name}:{i+1}: Avoid meta commentary about card design in Notes/Note/Mnemonic/Extra. Keep only content-related context. Title: {card_title!r}"
             )
 
         if _warn_if_long_comma_chain(content):

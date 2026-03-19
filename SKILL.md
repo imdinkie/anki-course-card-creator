@@ -27,6 +27,7 @@ Zusätzliche Guardrails:
 - Lieber zwei gute Karten als eine Karte mit zwei halb-unabhängigen Gedankenschritten.
 - Gruppiere mehrere Punkte nur dann auf derselben Karte bzw. unter derselben Cloze-Nummer, wenn sie wirklich als eine kleine, leicht merkbare Einheit gelernt werden können.
 - Wenn eine Karte ohne Zusatzkontext zu nackt/kurz wäre, ergänze Kontext, Beispiel, Merkhilfe oder Einordnung in einem Zusatzfeld statt die Kernfrage künstlich aufzublähen.
+- Wenn eine F/A-Karte in Wahrheit zwei Gedankenschritte oder zwei Teilfragen mischt, splitte sie oder baue sie in eine strukturierte Cloze mit echter Leitfrage um.
 
 ### Notiztyp-Policy (verbindlich)
 
@@ -35,13 +36,14 @@ Default:
 - Standard-Cloze-Typ ist **nicht** mehr das Anki-Standard-Notizformat `Cloze`, sondern `Enhanced Cloze 2.1 v2`.
 
 Verwendung:
-- `Basic` für Definitionen, Abgrenzungen, Zusammenhänge, Anwendungen, Vergleiche, Begründungen, Beispiele und andere konzeptuelle Fragen.
-- `Enhanced Cloze 2.1 v2` bevorzugt für Listen, Zuordnungen, Sequenzen, Matrizen, Akronym-/Artefakt-Bündel und strukturierte Mehrfach-Reproduktion.
+- `Basic` für wirklich atomare Definitionen, Abgrenzungen, Zusammenhänge, Anwendungen, Vergleiche, Begründungen, Beispiele und andere konzeptuelle Fragen.
+- `Enhanced Cloze 2.1 v2` bevorzugt für Listen, Zuordnungen, Sequenzen, Matrizen, Akronym-/Artefakt-Bündel und strukturierte Mehrfach-Reproduktion; im Zweifel eher Cloze als F/A, solange die Karte lösbar und nicht überladen bleibt.
 - Das alte Standard-`Cloze` nur aus Kompatibilitätsgründen in Bestandsdateien akzeptieren, aber nicht mehr als Default erzeugen.
 
 Feldnutzung:
 - Bei `Basic` gibt es die Felder `Front`, `Back`, `Notes`. Nutze `Notes` großzügig für Kontext, Beispiele, Mnemonics, Eselsbrücken, typische Fehler oder kurze Einordnungen.
 - Bei `Enhanced Cloze 2.1 v2` gibt es die Felder `Content`, `Note`, `Mnemonic`, `Extra`, `Cloze99`. Nutze `Note`, `Mnemonic` und `Extra` großzügig, aber nur wenn sie didaktisch helfen. `Cloze99` bleibt standardmäßig leer.
+- In `Notes` / `Note` / `Mnemonic` / `Extra` nie Meta-Kommentare über die Karte selbst schreiben, also nichts wie „diese Karte prüft ...“, „klausurnah“, „bewusst isoliert“, „die Clozes sind absichtlich so gesetzt ...“. Dort gehört nur inhaltlicher Zusatznutzen hinein.
 
 ### Fragequalität / Prompt-Leakage (verbindlich)
 
@@ -52,6 +54,7 @@ Praktisch:
 - In der Frage nicht unnötig den Zielbegriff nennen, wenn eine indirektere Formulierung die gleiche Präzision hat.
 - Keine Fragen bauen, die sich durch das Lesen des Titels praktisch schon selbst beantworten.
 - Vor jeder finalen Karte kurz prüfen: "Würde ich die Antwort auch dann noch aktiv erinnern müssen, wenn ich nur Titel + Frage sehe?"
+- Auch `Grafik/Diagramm:` darf keine Lösung spoilern. Dort nur neutrale Kurzbezeichnungen verwenden, nicht schon die gesuchten Antwortbegriffe oder komplette Aufzählungen.
 
 ### Schema-/Schrittfolgen-Pattern (nur bei ausreichender Komplexität)
 
@@ -115,6 +118,7 @@ Wenn mehrere Akronyme/Begriffe zusammengehören (z. B. Dokumente, Kennzahlen, Ro
 - Schreibe Akronyme aus (EN + DE, falls im Material vorhanden).
 - Packe ausgeschriebene Bedeutung und ggf. sehr kurzes Praxisbeispiel möglichst mit in die Completion, wenn das die Lernbarkeit klar verbessert.
 - Wenn ein Akronym-Bündel inhaltlich zu komplex wird, splitte in zwei Karten statt alles auf eine Karte zu pressen.
+- Lasse in der Cloze genug sprachlichen Rahmen stehen, damit die Karte lösbar bleibt; nicht den gesamten Satz blind leerziehen, wenn dadurch nur noch ein nacktes Loch ohne Kontext übrig bleibt.
 
 ### Abschlussfragen/Lernziele als Coverage-Checklist (ohne Tooling)
 
@@ -239,6 +243,8 @@ Bei Nutzerfeedback:
 2. Erhalte bewährte Karten unverändert, ändere nur betroffene Inhalte.
 3. Prüfe Konsistenz über Kapitel, Terminologie und Schwierigkeitsgrad.
 4. Aktualisiere Quellen- und Grafikangaben, falls Inhalte verschoben wurden.
+5. Kommentare mit führendem `>` sind reine Review-Anweisungen und dürfen nie in die finalen Karteninhalte oder Zusatzfelder übernommen werden.
+6. Wenn Feedback auf Wiederholungen hinweist, streiche die Wiederholung standardmäßig, statt sie nur umzuschreiben.
 
 ### 6) Finalisieren und Export
 
@@ -276,6 +282,7 @@ Tags: Add-Image
 Hinweise:
 - `Notes` ist optional, sollte aber großzügig genutzt werden, wenn zusätzlicher Kontext das Erinnern stabilisiert.
 - Wenn keine Grafik relevant ist, die Zeile `Grafik/Diagramm: ...` weglassen.
+- Wenn du aus einem Review-Entwurf mit `>`-Kommentaren arbeitest, interpretiere diese Zeilen als Änderungsanweisungen und lasse sie in der neuen Version vollständig weg.
 
 Für `Enhanced Cloze 2.1 v2`:
 
@@ -319,6 +326,9 @@ Image: ./assets/<datei>.png
 Regeln:
 - `Note`, `Mnemonic` und `Extra` sind optional, aber ausdrücklich erwünscht, wenn sie das Lernen verbessern.
 - Nicht alle Zusatzfelder künstlich befüllen. Nutze sie nur mit echtem didaktischem Mehrwert.
+- Auch bei `Enhanced Cloze` muss die eigentliche Frage erhalten bleiben; keine kartenlose Cloze-Wand ohne explizite Leitfrage.
+- Wenn mehrere Stichpunkte unabhängig sind, gib ihnen standardmäßig unterschiedliche Cloze-Nummern. Dieselbe Nummer nur bei eng zusammengehörigen Paaren/Bündeln.
+- Clozes sollen den relevanten Chunk abdecken, aber nicht den gesamten sprachlichen Rahmen zerstören. Ein kurzer, lösbarer Kontext soll nach Möglichkeit sichtbar bleiben.
 - `BackExtra` ist bei Legacy-`Cloze` optional, aber das vorgesehene Feld für Zusatzkontext und Bilder.
 - Bilder werden im finalen Export immer **am Anfang** des jeweiligen Zielfelds eingebunden:
   - `Basic` -> `Notes`
@@ -338,6 +348,7 @@ Wenn du im aktuellen Arbeitsordner schneller und fehlerärmer arbeiten willst, k
 - `scripts/ankiconnect_import.py`: lädt referenzierte Medien via AnkiConnect hoch und legt die Notizen direkt in Anki an.
 
 Wenn pip/Installationen systemweit blockiert sind (PEP 668): nutze ein venv im Arbeitsordner, z. B. `python3 -m venv .venv` und dann `. .venv/bin/activate`.
+Wenn dir bei Helper-Skripten Python-Pakete fehlen, erstelle standardmäßig selbst ein lokales `.venv` im Arbeitsordner und installiere die nötigen Pakete dort, statt auf systemweite Installation zu warten.
 
 ## Qualitätscheck vor Übergabe
 

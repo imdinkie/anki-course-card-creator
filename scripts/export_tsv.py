@@ -10,6 +10,14 @@ import unicodedata
 from dataclasses import dataclass, replace
 from pathlib import Path
 
+try:
+    import markdown as py_markdown
+except ModuleNotFoundError as exc:
+    raise SystemExit(
+        "Missing Python package 'markdown'. Install it in the active environment or create a local venv, "
+        "e.g. `python3 -m venv .venv && . .venv/bin/activate && pip install markdown`."
+    ) from exc
+
 
 TSV_HEADER = "\n".join(
     [
@@ -26,6 +34,7 @@ ENHANCED_CLOZE_NOTETYPE = "Enhanced Cloze 2.1 v2"
 IMAGE_LINE_RE = re.compile(r"^Image:\s*(.+?)\s*$")
 MD_IMAGE_RE = re.compile(r"!\[[^\]]*\]\(([^)]+)\)")
 OBSIDIAN_IMAGE_RE = re.compile(r"!\[\[([^\]#|]+)(?:[|#][^\]]+)?\]\]")
+META_LINE_RE = re.compile(r"^\s*(Quelle:|Grafik/Diagramm:)\s*(.+?)\s*$")
 
 
 @dataclass(frozen=True)
@@ -53,81 +62,72 @@ def _consume_fence(lines: list[str], i: int) -> tuple[str, list[str], int]:
     return fence_type, content, i + 1
 
 
-def _inline_markdown_to_html(text: str) -> str:
-    text = text.replace("\\n", "\n").replace('\\"', '"')
-    text = text.replace("\t", "    ")
-    text = html.escape(text, quote=False)
-    text = re.sub(r"\*\*(.+?)\*\*", r"<b>\1</b>", text)
-    text = re.sub(r"(?<!\*)\*(?!\*)(.+?)(?<!\*)\*(?!\*)", r"<i>\1</i>", text)
-    return text
+def _render_markdown_block(text: str) -> str:
+    rendered = py_markdown.markdown(
+        text,
+        extensions=["nl2br", "sane_lists"],
+        output_format="html",
+    )
+    # Python-Markdown emits XHTML-style tags by default; normalize to simpler HTML.
+    rendered = rendered.replace("<br />", "<br>")
+    return rendered.strip()
 
 
-def _list_item_info(line: str) -> tuple[int, str, str] | None:
-    stripped = line.lstrip(" ")
-    indent = (len(line) - len(stripped)) // 2
+def _meta_line_html(label: str, value: str) -> str:
+    label_html = html.escape(label.strip(), quote=False)
+    value_html = html.escape(value.strip(), quote=False)
+    style = "font-size:0.75em;color:#666;line-height:1.2;margin-top:4px;"
+    return f'<div style="{style}"><span>{label_html}</span> {value_html}</div>'
 
-    if re.match(r"^[-*]\s+", stripped):
-        return indent, "ul", re.sub(r"^[-*]\s+", "", stripped, count=1)
 
-    if re.match(r"^\d+[.)]\s+", stripped):
-        return indent, "ol", re.sub(r"^\d+[.)]\s+", "", stripped, count=1)
+def _is_list_line(line: str) -> bool:
+    stripped = line.lstrip()
+    return bool(re.match(r"^[-*]\s+", stripped) or re.match(r"^\d+[.)]\s+", stripped))
 
-    return None
+
+def _normalize_markdown_lines(lines: list[str]) -> list[str]:
+    normalized: list[str] = []
+    for raw_line in lines:
+        current_is_list = _is_list_line(raw_line)
+        prev = normalized[-1] if normalized else None
+        prev_is_blank = prev is None or not prev.strip()
+        prev_is_list = False if prev is None else _is_list_line(prev)
+
+        if current_is_list and not prev_is_blank and not prev_is_list:
+            normalized.append("")
+        elif not current_is_list and prev is not None and prev_is_list and raw_line.strip():
+            normalized.append("")
+
+        normalized.append(raw_line)
+    return normalized
 
 
 def _markdownish_to_html(text: str) -> str:
     if not text.strip():
         return ""
 
-    lines = text.replace("\r\n", "\n").replace("\r", "\n").split("\n")
+    lines = text.replace("\\n", "\n").replace('\\"', '"').replace("\r\n", "\n").replace("\r", "\n").split("\n")
+    lines = _normalize_markdown_lines(lines)
     parts: list[str] = []
-    list_stack: list[tuple[int, str]] = []
-    paragraph: list[str] = []
+    markdown_lines: list[str] = []
 
-    def flush_paragraph() -> None:
-        nonlocal paragraph
-        if not paragraph:
-            return
-        joined = "<br>".join(_inline_markdown_to_html(line) for line in paragraph)
-        parts.append(f"<div>{joined}</div>")
-        paragraph = []
-
-    def close_lists(target_indent: int = -1) -> None:
-        while list_stack and list_stack[-1][0] >= target_indent:
-            _, list_type = list_stack.pop()
-            parts.append(f"</{list_type}>")
+    def flush_markdown() -> None:
+        nonlocal markdown_lines
+        chunk = "\n".join(markdown_lines).strip("\n")
+        if chunk.strip():
+            parts.append(_render_markdown_block(chunk))
+        markdown_lines = []
 
     for raw_line in lines:
-        if not raw_line.strip():
-            flush_paragraph()
-            close_lists(0)
+        meta_match = META_LINE_RE.match(raw_line)
+        if meta_match:
+            flush_markdown()
+            parts.append(_meta_line_html(meta_match.group(1), meta_match.group(2)))
             continue
 
-        item = _list_item_info(raw_line)
-        if item:
-            flush_paragraph()
-            indent, list_type, content = item
+        markdown_lines.append(raw_line)
 
-            while list_stack and list_stack[-1][0] > indent:
-                _, closing_type = list_stack.pop()
-                parts.append(f"</{closing_type}>")
-
-            if list_stack and list_stack[-1][0] == indent and list_stack[-1][1] != list_type:
-                _, closing_type = list_stack.pop()
-                parts.append(f"</{closing_type}>")
-
-            if not list_stack or list_stack[-1][0] < indent or list_stack[-1][1] != list_type:
-                parts.append(f"<{list_type}>")
-                list_stack.append((indent, list_type))
-
-            parts.append(f"<li>{_inline_markdown_to_html(content)}</li>")
-            continue
-
-        close_lists(0)
-        paragraph.append(raw_line)
-
-    flush_paragraph()
-    close_lists(0)
+    flush_markdown()
     return "".join(parts).strip()
 
 

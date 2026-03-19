@@ -73,6 +73,7 @@ Anki richtet sich beim CSV/TSV-Import mit `#notetype column` faktisch nach der m
 3. Wenn `SEITE_FEHLT` vorhanden ist, nicht exportieren, bis das geklärt ist.
 4. Bilder werden nicht als Binärdaten in die TSV geschrieben, sondern als HTML-Referenzen wie `<img src="...">`.
 5. Der Exporter erzeugt dafür automatisch ein flaches `media_bundle/`, das nur die tatsächlich referenzierten Bilder enthält.
+6. Zeilen mit `Quelle:` und `Grafik/Diagramm:` werden automatisch als dezente Meta-Zeilen in HTML gerendert.
 
 ## Deck- und Tag-Regeln
 
@@ -113,7 +114,8 @@ Anki richtet sich beim CSV/TSV-Import mit `#notetype column` faktisch nach der m
 2. HTML ist erlaubt und wird aktiv genutzt.
 3. Zeilenumbrüche, Bullet-Lists und nummerierte Listen sollen sauber als HTML ausgegeben werden.
 4. `*...*` und `**...**` sollen im Export als HTML-Kursiv/Fett erhalten bleiben.
-5. UTF-8 sicherstellen.
+5. Für die Umwandlung wird das Python-Paket `markdown` verwendet.
+6. UTF-8 sicherstellen.
 
 ## Vor dem finalen Export prüfen
 

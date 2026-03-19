@@ -42,6 +42,7 @@ Wenn `error != null`, gilt der Aufruf als fehlgeschlagen.
 
 1. In Anki das Add-on **AnkiConnect** installieren und Anki neu starten.
 2. Prüfen, dass Anki läuft und der lokale Endpoint `http://127.0.0.1:8765` erreichbar ist.
+3. Sicherstellen, dass das Python-Paket `markdown` im aktiven Environment verfügbar ist.
 3. Smoke Test im Repo ausführen:
 
 ```bash
@@ -106,10 +107,12 @@ python3 scripts/ankiconnect_import.py \
 
 Das Skript:
 1. parst die Markdown-Karten,
-2. prüft die Notiztypen/Felder,
-3. lädt referenzierte Bilder via `storeMediaFile` hoch,
-4. bindet Bilder am Anfang des passenden Zielfelds ein,
-5. legt die Notizen via `addNotes` an.
+2. rendert Markdown in schlichtes HTML (`**`, `*`, Listen, Absätze),
+3. stylt `Quelle:` und `Grafik/Diagramm:` automatisch als dezente Meta-Zeilen,
+4. prüft die Notiztypen/Felder,
+5. lädt referenzierte Bilder via `storeMediaFile` hoch,
+6. bindet Bilder am Anfang des passenden Zielfelds ein,
+7. legt die Notizen via `addNotes` an.
 
 ## Hinweise zur Robustheit
 
