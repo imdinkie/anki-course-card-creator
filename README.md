@@ -32,6 +32,54 @@ Warum:
 - Beispiele, Eselsbrücken und Einordnungen können in `Notes` ausgelagert werden, ohne die Kernfrage zu verwässern
 - dadurch bleiben die Karten atomar, aber nicht zu nackt
 
+### 2a. Empfohlenes Basic-Template
+
+Damit `Notes` inklusive eingebetteter Bilder auf der Kartenrückseite sichtbar ist, sollte das `Basic`-Notizformat in Anki mindestens so konfiguriert sein:
+
+Back Template:
+
+```html
+{{FrontSide}}
+
+<hr id=answer>
+
+<div class="answer-block">
+  {{Back}}
+</div>
+
+{{#Notes}}
+<div class="notes-block">
+  {{Notes}}
+</div>
+{{/Notes}}
+```
+
+Zusätzliche CSS-Regeln:
+
+```css
+.answer-block {
+  margin-bottom: 14px;
+}
+
+.notes-block {
+  margin-top: 14px;
+  padding-top: 10px;
+  border-top: 1px solid #ddd;
+}
+
+.notes-block img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 0 0 10px 0;
+  border-radius: 6px;
+}
+```
+
+Hinweis:
+- `Notes` bleibt dabei optisch normal lesbar und wird nicht künstlich ausgegraut.
+- Bilder aus dem Import erscheinen im `Notes`-Block.
+
 ### 3. Legacy-Cloze nur mit `Back Extra`
 
 Falls ältere Kartensätze weiterhin das Standard-Notizformat `Cloze` verwenden, sollte dieses Modell das Feld `Back Extra` besitzen.
